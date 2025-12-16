@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,7 +27,7 @@
 
         body {
             background-color: var(--bg-dark);
-            background-image: 
+            background-image:
                 radial-gradient(circle at 10% 20%, rgba(108, 99, 255, 0.2) 0%, transparent 40%),
                 radial-gradient(circle at 90% 80%, rgba(0, 242, 254, 0.2) 0%, transparent 40%);
             color: var(--text-main);
@@ -204,44 +205,100 @@
         }
 
         /* Price Category Colors */
-        .color-low { color: #4ade80; text-shadow: 0 0 50px rgba(74, 222, 128, 0.3); }
-        .color-medium { color: #facc15; text-shadow: 0 0 50px rgba(250, 204, 21, 0.3); }
-        .color-high { color: #f87171; text-shadow: 0 0 50px rgba(248, 113, 113, 0.3); }
-        .color-premium { color: #22d3ee; text-shadow: 0 0 50px rgba(34, 211, 238, 0.3); }
+        .color-low {
+            color: #4ade80;
+            text-shadow: 0 0 50px rgba(74, 222, 128, 0.3);
+        }
+
+        .color-medium {
+            color: #facc15;
+            text-shadow: 0 0 50px rgba(250, 204, 21, 0.3);
+        }
+
+        .color-high {
+            color: #f87171;
+            text-shadow: 0 0 50px rgba(248, 113, 113, 0.3);
+        }
+
+        .color-premium {
+            color: #22d3ee;
+            text-shadow: 0 0 50px rgba(34, 211, 238, 0.3);
+        }
+
+        .price-range-badge {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .badge-low { color: #4ade80; border-color: #4ade80; box-shadow: 0 0 20px rgba(74, 222, 128, 0.2); }
+        .badge-medium { color: #facc15; border-color: #facc15; box-shadow: 0 0 20px rgba(250, 204, 21, 0.2); }
+        .badge-high { color: #f87171; border-color: #f87171; box-shadow: 0 0 20px rgba(248, 113, 113, 0.2); }
+        .badge-premium { color: #22d3ee; border-color: #22d3ee; box-shadow: 0 0 20px rgba(34, 211, 238, 0.2); }
 
         /* Loading Spinner */
         .spinner {
             display: none;
             width: 24px;
             height: 24px;
-            border: 3px solid rgba(255,255,255,0.3);
+            border: 3px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             border-top-color: white;
             animation: spin 1s ease-in-out infinite;
             margin: 0 auto;
         }
-        
-        @keyframes spin { to { transform: rotate(360deg); } }
-        
-        .loading .spinner { display: block; }
-        .loading span { display: none; }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading .spinner {
+            display: block;
+        }
+
+        .loading span {
+            display: none;
+        }
 
         @media (max-width: 768px) {
-            .main-wrapper { padding: 1rem; }
-            .input-section { padding: 1.5rem; }
-            .form-grid { grid-template-columns: 1fr; }
-            .result-label { font-size: 3rem; }
-            .result-desc { font-size: 1.2rem; }
+            .main-wrapper {
+                padding: 1rem;
+            }
+
+            .input-section {
+                padding: 1.5rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .result-label {
+                font-size: 3rem;
+            }
+
+            .result-desc {
+                font-size: 1.2rem;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <div class="main-wrapper">
         <div class="input-section">
             <h1>Mobile Price AI</h1>
             <p class="subtitle">Enter device specifications for instant valuation</p>
-            
+
             <form id="predictForm">
                 <div class="form-grid">
                     <div class="input-group">
@@ -276,7 +333,7 @@
                         <label>Screen Width (px)</label>
                         <input type="number" name="px_width" placeholder="e.g. 1080" required>
                     </div>
-                    
+
                     <button type="submit" class="submit-btn">
                         <span>Predict Value</span>
                         <div class="spinner"></div>
@@ -290,6 +347,7 @@
     <div class="result-overlay" id="resultOverlay">
         <div class="result-content">
             <h2 class="result-label" id="predictionText">--</h2>
+            <div class="price-range-badge" id="priceRange"></div>
             <p class="result-desc" id="predictionDesc">Description goes here...</p>
             <button class="close-btn" onclick="closeResult()">Analyze Another Device</button>
         </div>
@@ -300,38 +358,43 @@
         const overlay = document.getElementById('resultOverlay');
         const predText = document.getElementById('predictionText');
         const predDesc = document.getElementById('predictionDesc');
+        const priceRange = document.getElementById('priceRange');
         const submitBtn = document.querySelector('.submit-btn');
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             // Show loading
             submitBtn.classList.add('loading');
-            
+
             const formData = new FormData(form);
-            
+
             try {
                 const response = await fetch('/', {
                     method: 'POST',
                     body: formData
                 });
-                
+
                 const data = await response.json();
-                
+
                 // Update UI
                 predText.textContent = data.prediction_label;
                 predDesc.textContent = data.description;
-                
+                priceRange.textContent = data.price_range;
+
                 // Clear old classes
                 predText.className = 'result-label';
                 predText.classList.add('color-' + data.badge_class);
-                
+
+                priceRange.className = 'price-range-badge';
+                priceRange.classList.add('badge-' + data.badge_class);
+
                 // Show result after a small delay for effect
                 setTimeout(() => {
                     overlay.classList.add('active');
                     submitBtn.classList.remove('loading');
                 }, 500);
-                
+
             } catch (error) {
                 console.error('Error:', error);
                 alert('An error occurred. Please try again.');
@@ -346,4 +409,5 @@
     </script>
 
 </body>
+
 </html>

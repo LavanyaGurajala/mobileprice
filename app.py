@@ -51,22 +51,26 @@ def predict():
             0: {
                 'label': 'Low Cost',
                 'class': 'low',
-                'desc': 'This device falls into the budget-friendly category. Ideal for basic usage, calling, and light web browsing. Great value for entry-level users.'
+                'desc': 'This device falls into the budget-friendly category. Ideal for basic usage, calling, and light web browsing.',
+                'range': 'Below ₹10,000'
             },
             1: {
                 'label': 'Medium Cost',
                 'class': 'medium',
-                'desc': 'A balanced device offering good performance for the price. Suitable for daily multitasking, social media, and casual photography.'
+                'desc': 'A balanced device offering good performance for the price. Suitable for daily multitasking and social media.',
+                'range': '₹10,000 - ₹25,000'
             },
             2: {
                 'label': 'High Cost',
                 'class': 'high',
-                'desc': 'A flagship-killer tier device. High performance with premium features, capable of handling heavy games and high-quality media consumption.'
+                'desc': 'A flagship-killer tier device. High performance with premium features, capable of handling heavy tasks.',
+                'range': '₹25,000 - ₹50,000'
             },
             3: {
                 'label': 'Premium Cost',
                 'class': 'premium',
-                'desc': 'Top-tier luxury device with cutting-edge specifications. Designed for power users who demand the absolute best performance and features.'
+                'desc': 'Top-tier luxury device with cutting-edge specifications. Designed for power users who demand the best.',
+                'range': 'Above ₹50,000'
             }
         }
         
@@ -76,7 +80,8 @@ def predict():
             'prediction': prediction,
             'prediction_label': result_data['label'],
             'badge_class': result_data['class'],
-            'description': result_data['desc']
+            'description': result_data['desc'],
+            'price_range': result_data['range']
         })
     
     return render_template('index.html')
