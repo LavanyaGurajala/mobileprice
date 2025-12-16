@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Price Predictor | AI Powered</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+
+        :root {
+            --primary: #6C63FF;
+            --accent: #00f2fe;
+            --bg-dark: #0f172a;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(108, 99, 255, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(0, 242, 254, 0.2) 0%, transparent 40%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        .main-wrapper {
+            width: 100%;
+            max-width: 1400px;
+            padding: 2rem;
+            display: flex;
+            gap: 4rem;
+            align-items: center;
+            min-height: 90vh;
+            position: relative;
+        }
+
+        /* Input Section */
+        .input-section {
+            flex: 1;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transition: all 0.5s ease;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #fff, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            padding: 1rem;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.1);
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .submit-btn {
+            grid-column: span 2;
+            margin-top: 1rem;
+            background: linear-gradient(135deg, var(--primary), #4f46e5);
+            color: white;
+            border: none;
+            padding: 1.25rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(108, 99, 255, 0.5);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Result Overlay / Full Screen Impact */
+        .result-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .result-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .result-content {
+            text-align: center;
+            max-width: 800px;
+            padding: 2rem;
+            transform: scale(0.9);
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .result-overlay.active .result-content {
+            transform: scale(1);
+        }
+
+        .result-label {
+            font-size: 5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+        }
+
+        .result-desc {
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            margin-bottom: 3rem;
+            line-height: 1.6;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: 2px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 1rem 3rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .close-btn:hover {
+            background: var(--text-main);
+            color: var(--bg-dark);
+            border-color: var(--text-main);
+        }
+
+        /* Price Category Colors */
+        .color-low { color: #4ade80; text-shadow: 0 0 50px rgba(74, 222, 128, 0.3); }
+        .color-medium { color: #facc15; text-shadow: 0 0 50px rgba(250, 204, 21, 0.3); }
+        .color-high { color: #f87171; text-shadow: 0 0 50px rgba(248, 113, 113, 0.3); }
+        .color-premium { color: #22d3ee; text-shadow: 0 0 50px rgba(34, 211, 238, 0.3); }
+
+        /* Loading Spinner */
+        .spinner {
+            display: none;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .loading .spinner { display: block; }
+        .loading span { display: none; }
+
+        @media (max-width: 768px) {
+            .main-wrapper { padding: 1rem; }
+            .input-section { padding: 1.5rem; }
+            .form-grid { grid-template-columns: 1fr; }
+            .result-label { font-size: 3rem; }
+            .result-desc { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-wrapper">
+        <div class="input-section">
+            <h1>Mobile Price AI</h1>
+            <p class="subtitle">Enter device specifications for instant valuation</p>
+            
+            <form id="predictForm">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Battery Power (mAh)</label>
+                        <input type="number" name="battery_power" placeholder="e.g. 4000" required>
+                    </div>
+                    <div class="input-group">
+                        <label>RAM (MB)</label>
+                        <input type="number" name="ram" placeholder="e.g. 4096" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Internal Memory (GB)</label>
+                        <input type="number" name="int_memory" placeholder="e.g. 64" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Primary Camera (MP)</label>
+                        <input type="number" name="pc" placeholder="e.g. 12" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Clock Speed (GHz)</label>
+                        <input type="number" step="0.1" name="clock_speed" placeholder="e.g. 2.4" required>
+                    </div>
+                    <div class="input-group">
+                        <label>CPU Cores</label>
+                        <input type="number" name="n_cores" placeholder="e.g. 8" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Screen Height (px)</label>
+                        <input type="number" name="px_height" placeholder="e.g. 1920" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Screen Width (px)</label>
+                        <input type="number" name="px_width" placeholder="e.g. 1080" required>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">
+                        <span>Predict Value</span>
+                        <div class="spinner"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Full Screen Result Overlay -->
+    <div class="result-overlay" id="resultOverlay">
+        <div class="result-content">
+            <h2 class="result-label" id="predictionText">--</h2>
+            <p class="result-desc" id="predictionDesc">Description goes here...</p>
+            <button class="close-btn" onclick="closeResult()">Analyze Another Device</button>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('predictForm');
+        const overlay = document.getElementById('resultOverlay');
+        const predText = document.getElementById('predictionText');
+        const predDesc = document.getElementById('predictionDesc');
+        const submitBtn = document.querySelector('.submit-btn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Show loading
+            submitBtn.classList.add('loading');
+            
+            const formData = new FormData(form);
+            
+            try {
+                const response = await fetch('/', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                // Update UI
+                predText.textContent = data.prediction_label;
+                predDesc.textContent = data.description;
+                
+                // Clear old classes
+                predText.className = 'result-label';
+                predText.classList.add('color-' + data.badge_class);
+                
+                // Show result after a small delay for effect
+                setTimeout(() => {
+                    overlay.classList.add('active');
+                    submitBtn.classList.remove('loading');
+                }, 500);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+                submitBtn.classList.remove('loading');
+            }
+        });
+
+        function closeResult() {
+            overlay.classList.remove('active');
+            // Form inputs remain filled for convenience, but result is "cleared" from view
+        }
+    </script>
+
+</body>
+</html>
